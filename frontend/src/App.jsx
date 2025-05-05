@@ -2,9 +2,13 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { useEffect } from 'react'
 
 function App() {
   const [count, setCount] = useState(0)
+  useEffect(() => {
+    console.log('VITE_BACKEND_URL:', import.meta.env.VITE_BACKEND_URL)
+  }, [])
 
   return (
     <>
@@ -17,6 +21,9 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
+      <h2 style={{ color: 'green' }}>
+        Ruta backend: {import.meta.env.VITE_BACKEND_URL}
+      </h2>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
