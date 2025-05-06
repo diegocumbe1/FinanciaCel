@@ -1,6 +1,6 @@
 # 📱 FinanciaCel
 
-Proyecto de backend desarrollado en PHP con Laravel, base de datos PostgreSQL y frontend en Vue.js. Dockerizado para facilitar la ejecución en cualquier entorno.
+Proyecto de backend desarrollado en PHP con Laravel, base de datos PostgreSQL y frontend en Vite.js. Dockerizado para facilitar la ejecución en cualquier entorno.
 
 ---
 
@@ -8,7 +8,7 @@ Proyecto de backend desarrollado en PHP con Laravel, base de datos PostgreSQL y 
 
 - ✅ PHP 8.3 + Laravel
 - ✅ PostgreSQL
-- ✅ Vue.js
+- ✅ Vite.js
 - ✅ Docker + Docker Compose
 - ✅ Swagger (documentación API)
 
@@ -49,3 +49,7 @@ Este comando elimina las tablas existentes, recrea la base de datos y carga los 
 
 ```bash
 docker exec -it financiacel_app php artisan migrate:fresh --seed
+```
+### Visualización de Frontend
+
+[localhost:5173/](http://localhost:5173/)
