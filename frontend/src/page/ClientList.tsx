@@ -58,26 +58,38 @@ const ClientList: React.FC = () => {
             <th style={{ cursor: 'pointer' }} onClick={() => handleSort('name')}>Nombre {sortBy === 'name' ? (sortDir === 'asc' ? '▲' : '▼') : ''}</th>
             <th style={{ cursor: 'pointer' }} onClick={() => handleSort('document')}>Documento {sortBy === 'document' ? (sortDir === 'asc' ? '▲' : '▼') : ''}</th>
             <th style={{ cursor: 'pointer' }} onClick={() => handleSort('email')}>Correo {sortBy === 'email' ? (sortDir === 'asc' ? '▲' : '▼') : ''}</th>
+            <th>Estado Crédito</th>
           </tr>
         </thead>
         <tbody>
-          {sortedClients.map(c => (
-            <tr
-              key={c.id}
-              style={{ borderBottom: '1px solid #eee', cursor: 'pointer' }}
-              onClick={() => navigate(`/clientes/${c.id}`)}
-            >
-              <td>{c.name}</td>
-              <td>{c.document}</td>
-              <td>{c.email}</td>
-            </tr>
-          ))}
+          {sortedClients.map(c => {
+            let creditState = '';
+            if (c.credit_applications && c.credit_applications.length > 0) {
+              const lastCredit = c.credit_applications[c.credit_applications.length - 1];
+              creditState = lastCredit.state || '';
+            }
+            return (
+              <tr
+                key={c.id}
+                style={{ borderBottom: '1px solid #eee', cursor: 'pointer' }}
+                onClick={() => navigate(`/clientes/${c.id}`)}
+              >
+                <td>{c.name}</td>
+                <td>{c.document}</td>
+                <td>{c.email}</td>
+                <td>{creditState}</td>
+              </tr>
+            );
+          })}
           {sortedClients.length === 0 && (
-            <tr><td colSpan={3} style={{ textAlign: 'center', color: '#888' }}>No hay clientes</td></tr>
+            <tr><td colSpan={4} style={{ textAlign: 'center', color: '#888' }}>No hay clientes</td></tr>
           )}
         </tbody>
       </table>
-      <button onClick={() => navigate('/registrar-cliente')} style={{ marginTop: 16 }}>
+      <button
+        onClick={() => navigate(`/registrar-cliente${search ? `?document_number=${encodeURIComponent(search)}` : ''}`)}
+        style={{ marginTop: 16 }}
+      >
         Registrar nuevo cliente
       </button>
     </div>

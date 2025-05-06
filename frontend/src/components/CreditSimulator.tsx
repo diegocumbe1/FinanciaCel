@@ -86,11 +86,22 @@ const CreditSimulator: React.FC<Props> = ({ client }) => {
         </div>
       )}
       <h2 style={{ color: 'var(--color-accent)', fontWeight: 'bold', textAlign: 'center' }}>
-        Simulador de Crédito <span style={{ color: 'var(--color-primary)' }}>Celu</span><span style={{ color: 'var(--color-secondary)' }}>Tecn</span>
+        Simulador de Crédito <span style={{ color: 'var(--color-primary)' }}>Financia</span><span style={{ color: 'var(--color-secondary)' }}>Cel</span>
       </h2>
 
       <label><strong>Celular:</strong></label>
-      <select value={phoneId} onChange={e => setPhoneId(e.target.value)} style={{ width: '100%', marginBottom: 12 }}>
+      <select
+        value={phoneId}
+        onChange={e => setPhoneId(e.target.value)}
+        style={{
+          width: '100%',
+          marginBottom: 20,
+          padding: 10,
+          borderRadius: 8,
+          border: '1px solid #ddd',
+          fontSize: 16
+        }}
+      >
         <option value="">Seleccione</option>
         {phones.map(p => (
           <option key={p.id} value={p.id}>
@@ -100,7 +111,18 @@ const CreditSimulator: React.FC<Props> = ({ client }) => {
       </select>
 
       <label><strong>Plazo (meses):</strong></label>
-      <select value={term} onChange={e => setTerm(Number(e.target.value))} style={{ width: '100%', marginBottom: 12 }}>
+      <select
+        value={term}
+        onChange={e => setTerm(Number(e.target.value))}
+        style={{
+          width: '100%',
+          marginBottom: 20,
+          padding: 10,
+          borderRadius: 8,
+          border: '1px solid #ddd',
+          fontSize: 16
+        }}
+      >
         {[6, 12, 18, 24, 36].map(n => (
           <option key={n} value={n}>{n}</option>
         ))}

@@ -1,11 +1,11 @@
 /* index.css */
 
 :root {
-  --color-primary: #f60;         /* Naranja CeluTecn */
-  --color-secondary: #0033cc;    /* Azul CeluTecn */
-  --color-accent: #f00;          /* Rojo */
-  --color-bg: #fdfdfd;           /* Fondo claro */
-  --color-text: #333;            /* Texto principal */
+  --color-primary: #f60;         
+  --color-secondary: #0033cc;    
+  --color-accent: #f00;          
+  --color-bg: #fdfdfd;           
+  --color-text: #333;            
   --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 

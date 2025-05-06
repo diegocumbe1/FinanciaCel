@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import api from '../api/axios';
-
 import CreditSimulator from './CreditSimulator';
 import { Client } from '../types/Client';
 
@@ -30,42 +29,6 @@ const ClientDetails: React.FC<{ client: Client; onUpdate?: (client: Client) => v
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showSimulator, setShowSimulator] = useState(false);
-  const [clients, setClients] = useState<Client[]>([]);
-  const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState<'name' | 'document' | 'email'>('name');
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
-
-  useEffect(() => {
-    fetchClients();
-  }, [search]);
-
-  const fetchClients = async () => {
-    try {
-      const params = search ? { document: search } : {};
-      const res = await api.get('/clients', { params });
-      const data = Array.isArray(res.data.data) ? res.data.data : [];
-      setClients(data.map((c: any) => ({ ...c, document: c.document_number })));
-    } catch (e) {
-      setClients([]);
-    }
-  };
-
-  const handleSort = (field: 'name' | 'document' | 'email') => {
-    if (sortBy === field) {
-      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setSortDir('asc');
-    }
-  };
-
-  const sortedClients = [...clients].sort((a, b) => {
-    const aValue = a[sortBy] || '';
-    const bValue = b[sortBy] || '';
-    if (aValue < bValue) return sortDir === 'asc' ? -1 : 1;
-    if (aValue > bValue) return sortDir === 'asc' ? 1 : -1;
-    return 0;
-  });
 
   const activeCredit = client.credit_applications?.find(
     (c) => c.state === 'pending' || c.state === 'approved' || c.state === 'rejected'
@@ -91,40 +54,47 @@ const ClientDetails: React.FC<{ client: Client; onUpdate?: (client: Client) => v
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-light)',
-        border: '1px solid var(--color-primary)',
-        borderRadius: '10px',
-        padding: '16px',
-        marginTop: '16px',
-        color: 'var(--color-dark)',
+        background: '#fff',
+        border: '1px solid #e0e0e0',
+        borderRadius: '16px',
+        padding: '32px',
+        marginTop: '24px',
+        color: '#222',
         fontFamily: 'var(--font-main)',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.07)',
+        maxWidth: 700,
+        marginLeft: 'auto',
+        marginRight: 'auto',
       }}
     >
-      <h3 style={{ color: 'var(--color-primary)', marginBottom: 10 }}>Información del Cliente</h3>
-      <p><strong>Nombre:</strong> {client.name}</p>
-      <p><strong>Documento:</strong> {client.document}</p>
-      {client.email && <p><strong>Correo:</strong> {client.email}</p>}
-      {client.phone_number && <p><strong>Teléfono:</strong> {client.phone_number}</p>}
-      {client.address && <p><strong>Dirección:</strong> {client.address}</p>}
+      <h3 style={{ color: 'var(--color-primary)', marginBottom: 18, fontSize: 26, fontWeight: 700 }}>Información del Cliente</h3>
+      <div style={{ marginBottom: 18 }}>
+        <p><strong>Nombre:</strong> {client.name}</p>
+        <p><strong>Documento:</strong> {client.document}</p>
+        {client.email && <p><strong>Correo:</strong> {client.email}</p>}
+        {client.phone_number && <p><strong>Teléfono:</strong> {client.phone_number}</p>}
+        {client.address && <p><strong>Dirección:</strong> {client.address}</p>}
+      </div>
 
       {activeCredit && (
         <div style={{ marginTop: 20 }}>
           <div style={{
-            padding: '12px',
+            padding: '14px',
             border: '2px solid',
             borderColor:
-              activeCredit.state === 'approved' ? 'green' :
-              activeCredit.state === 'rejected' ? 'crimson' : 'gray',
-            backgroundColor:
-              activeCredit.state === 'approved' ? '#e6ffed' :
-              activeCredit.state === 'rejected' ? '#ffe6e6' : '#f9f9f9',
+              activeCredit.state === 'approved' ? '#4BB543' :
+              activeCredit.state === 'rejected' ? '#e74c3c' : '#aaa',
+            background:
+              activeCredit.state === 'approved' ? '#eafbe7' :
+              activeCredit.state === 'rejected' ? '#ffeaea' : '#f9f9f9',
             color:
-              activeCredit.state === 'approved' ? 'green' :
-              activeCredit.state === 'rejected' ? 'crimson' : 'black',
-            fontWeight: 'bold',
-            fontSize: '1.2rem',
-            marginBottom: 12,
-            borderRadius: 8
+              activeCredit.state === 'approved' ? '#388e3c' :
+              activeCredit.state === 'rejected' ? '#c0392b' : '#222',
+            fontWeight: 600,
+            fontSize: '1.1rem',
+            marginBottom: 16,
+            borderRadius: 10,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
           }}>
             {activeCredit.state === 'approved' && '✅ Crédito Aprobado'}
             {activeCredit.state === 'rejected' && '❌ Crédito Rechazado'}
@@ -150,17 +120,20 @@ const ClientDetails: React.FC<{ client: Client; onUpdate?: (client: Client) => v
           )}
 
           {activeCredit.state === 'pending' && (
-            <div style={{ marginTop: 16 }}>
+            <div style={{ marginTop: 16, display: 'flex', gap: 12 }}>
               <button
                 onClick={() => updateCreditState('approved')}
                 style={{
-                  backgroundColor: 'green',
+                  background: '#4BB543',
                   color: 'white',
                   border: 'none',
-                  padding: '8px 16px',
+                  padding: '10px 22px',
                   marginRight: 8,
-                  borderRadius: 5,
+                  borderRadius: 7,
                   cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: 16,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.07)'
                 }}
                 disabled={loading}
               >
@@ -169,12 +142,15 @@ const ClientDetails: React.FC<{ client: Client; onUpdate?: (client: Client) => v
               <button
                 onClick={() => updateCreditState('rejected')}
                 style={{
-                  backgroundColor: 'crimson',
+                  background: '#e74c3c',
                   color: 'white',
                   border: 'none',
-                  padding: '8px 16px',
-                  borderRadius: 5,
+                  padding: '10px 22px',
+                  borderRadius: 7,
                   cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: 16,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.07)'
                 }}
                 disabled={loading}
               >
@@ -186,34 +162,37 @@ const ClientDetails: React.FC<{ client: Client; onUpdate?: (client: Client) => v
       )}
 
       {!activeCredit && (
-        <div style={{ marginTop: 10 }}>
-          <p style={{ color: 'green' }}>
+        <div style={{ marginTop: 18 }}>
+          <p style={{ color: '#388e3c', fontWeight: 600 }}>
             No tiene créditos activos. Puede simular uno nuevo.
           </p>
           <button
             onClick={() => setShowSimulator(!showSimulator)}
             style={{
-              marginTop: 8,
-              padding: '8px 16px',
-              backgroundColor: 'var(--color-primary)',
+              marginTop: 10,
+              padding: '10px 22px',
+              background: 'var(--color-primary)',
               color: 'white',
               border: 'none',
-              borderRadius: 5,
-              cursor: 'pointer'
+              borderRadius: 7,
+              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: 16,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.07)'
             }}
           >
             {showSimulator ? 'Cerrar simulador' : 'Simular Crédito'}
           </button>
 
           {showSimulator && (
-            <div style={{ marginTop: 16 }}>
+            <div style={{ marginTop: 18 }}>
               <CreditSimulator client={client} />
             </div>
           )}
         </div>
       )}
 
-      {error && <p style={{ color: 'red', marginTop: 10 }}>{error}</p>}
+      {error && <p style={{ color: '#e74c3c', marginTop: 14 }}>{error}</p>}
     </div>
   );
 };

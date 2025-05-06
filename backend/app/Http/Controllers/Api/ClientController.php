@@ -59,7 +59,14 @@ public function index(Request $request)
     $document = $request->input('document');
     $search = $request->input('search');
 
-    $clients = Client::query();
+    $clients = Client::with([
+        'documentType:id,name',
+        'creditApplications' => function ($query) {
+            $query->select('id', 'client_id', 'phone_id', 'amount', 'state', 'term', 'created_at')
+                  ->orderByDesc('created_at');
+        },
+        
+    ]);
 
     if ($document) {
         $clients->where('document_number', 'ILIKE', "%$document%");
