@@ -132,6 +132,33 @@
                     }
                 }
             },
+            "delete": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Eliminar cliente por UUID",
+                "operationId": "5b6d3bdaf49885db3b7b4b23aed2156b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID del cliente",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Cliente eliminado exitosamente"
+                    },
+                    "404": {
+                        "description": "Cliente no encontrado"
+                    }
+                }
+            },
             "patch": {
                 "tags": [
                     "Clients"

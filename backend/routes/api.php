@@ -14,7 +14,7 @@ Route::prefix('clients')->group(function () {
     Route::get('{id}', [ClientController::class, 'show']);
     Route::post('/', [ClientController::class, 'store']);
     Route::patch('{id}', [ClientController::class, 'update']);
-
+    Route::delete('{id}', [ClientController::class, 'destroy']);
 });
 
 Route::prefix('phones')->group(function () {

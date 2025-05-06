@@ -202,4 +202,36 @@ public function update(Request $request, $id)
     return response()->json($client);
 }
 
+/**
+ * @OA\Delete(
+ *     path="/api/clients/{id}",
+ *     summary="Eliminar cliente por UUID",
+ *     tags={"Clients"},
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         description="UUID del cliente",
+ *         required=true,
+ *         @OA\Schema(type="string", format="uuid")
+ *     ),
+ *     @OA\Response(
+ *         response=204,
+ *         description="Cliente eliminado exitosamente"
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Cliente no encontrado"
+ *     )
+ * )
+ */
+public function destroy($id)
+{
+    $client = Client::find($id);
+    if (!$client) {
+        return response()->json(['message' => 'Cliente no encontrado.'], 404);
+    }
+    $client->delete();
+    return response()->json(null, 204);
+}
+
 }
