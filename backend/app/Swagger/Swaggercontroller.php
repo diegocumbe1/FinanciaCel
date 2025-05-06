@@ -8,7 +8,7 @@ namespace App\Swagger;
  *     title="API FinanciaCel",
  *     description="Documentación de la API de crédito celular para FinanciaCel",
  *     @OA\Contact(
- *         email="soporte@simphony.com"
+ *         email="diegosoft84@gmail.com"
  *     )
  * )
  *

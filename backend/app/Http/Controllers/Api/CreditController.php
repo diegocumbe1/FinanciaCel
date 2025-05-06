@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\CreditApplication;
 use App\Models\Phone;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
 
 /**
  * @OA\Tag(
@@ -160,11 +163,99 @@ class CreditController extends Controller
                 return response()->json(['error' => 'No hay stock disponible.'], 400);
             }
 
-            // descuento stock y actualiza
-            $credit->phone->decrement('stock');
+            DB::transaction(function () use ($credit) {
+                $credit->phone->decrement('stock');
+                $credit->update(['state' => 'approved']);
+
+                $interestRate = 0.015; // 1.5%
+                $total = $credit->amount * (1 + ($interestRate * $credit->term));
+                $monthly = round($total / $credit->term, 2);
+
+                for ($i = 1; $i <= $credit->term; $i++) {
+                    $due = now()->addMonths($i);
+                    $credit->instalments()->create([
+                        'number' => $i,
+                        'amount' => $monthly,
+                        'due_date' => $due->format('Y-m-d'),
+                    ]);
+                }
+            });
+
+            return response()->json($credit->load('instalments'));
         }
+
 
         $credit->update(['state' => $data['state']]);
         return response()->json($credit);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/credits/{id}/instalments",
+     *     summary="Listar cuotas de un crédito",
+     *     tags={"Credits"},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\Response(response=200, description="Lista de cuotas"),
+     *     @OA\Response(response=404, description="Crédito no encontrado")
+     * )
+     */
+    public function instalments(string $id)
+    {
+        $credit = CreditApplication::with('instalments')->findOrFail($id);
+        return response()->json($credit->instalments);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/credits/simulate",
+     *     summary="Simular plan de pagos antes de crear la solicitud",
+     *     tags={"Credits"},
+     *     @OA\Parameter(name="amount", in="query", required=true, @OA\Schema(type="number")),
+     *     @OA\Parameter(name="term", in="query", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="interest", in="query", required=false, @OA\Schema(type="number")),
+     *     @OA\Response(response=200, description="Plan de cuotas simulado"),
+     *     @OA\Response(response=400, description="Parámetros inválidos")
+     * )
+     */
+    public function simulate(Request $request)
+{
+    try {
+        $request->validate([
+            'amount' => 'required|numeric|min:0.01',
+            'term' => 'required|integer|min:1|max:36',
+            'interest' => 'nullable|numeric|min:0',
+        ]);
+
+        $amount = (float) $request->amount;
+        $term = (int) $request->term;
+        $interestRate = (float) ($request->input('interest', 0.015));
+
+        $total = $amount * (1 + ($interestRate * $term));
+        $monthly = round($total / $term, 2);
+
+        $instalments = [];
+        for ($i = 1; $i <= $term; $i++) {
+            $instalments[] = [
+                'number' => $i,
+                'amount' => $monthly,
+                'due_date' => now()->addMonths($i)->format('Y-m-d'),
+            ];
+        }
+
+        return response()->json([
+            'total_amount' => round($total, 2),
+            'monthly_amount' => $monthly,
+            'instalments' => $instalments,
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'error' => 'Error al simular el crédito',
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ], 500);
+    }
+}
+
+
+
 }

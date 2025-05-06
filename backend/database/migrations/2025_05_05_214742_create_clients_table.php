@@ -19,6 +19,7 @@ return new class extends Migration
             $table->uuid('document_type_id');
             $table->foreign('document_type_id')->references('id')->on('document_types');
             $table->string('address')->nullable();
+            $table->string('phone_number')->nullable();
             $table->decimal('credit_score', 5, 2)->nullable();
             $table->timestamps();
         });

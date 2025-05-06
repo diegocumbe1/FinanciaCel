@@ -4,7 +4,7 @@
         "title": "API FinanciaCel",
         "description": "Documentación de la API de crédito celular para FinanciaCel",
         "contact": {
-            "email": "soporte@simphony.com"
+            "email": "diegosoft84@gmail.com"
         },
         "version": "1.0.0"
     },
@@ -20,13 +20,22 @@
                 "tags": [
                     "Clients"
                 ],
-                "summary": "Buscar clientes por nombre, email o documento",
+                "summary": "Buscar clientes por nombre, email o número de documento",
                 "operationId": "413c12320d4121431e38339f45ecaa7c",
                 "parameters": [
                     {
                         "name": "search",
                         "in": "query",
-                        "description": "Texto de búsqueda",
+                        "description": "Buscar por nombre, email o número de documento (búsqueda parcial)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "document",
+                        "in": "query",
+                        "description": "Buscar cliente por número exacto de documento",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -35,7 +44,62 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Listado de clientes"
+                        "description": "Listado de clientes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "document_number": {
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "nullable": true
+                                                    },
+                                                    "address": {
+                                                        "type": "string",
+                                                        "nullable": true
+                                                    },
+                                                    "phone_number": {
+                                                        "type": "string",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Cliente no encontrado por número de documento",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Cliente no encontrado por número de documento."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -65,6 +129,68 @@
                     },
                     "404": {
                         "description": "Cliente no encontrado"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Actualizar cliente por UUID",
+                "operationId": "57a4f93815d29f166543efe9b101d633",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID del cliente",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "document_number": {
+                                        "type": "string"
+                                    },
+                                    "document_type_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "address": {
+                                        "type": "string"
+                                    },
+                                    "phone_number": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cliente actualizado exitosamente"
+                    },
+                    "404": {
+                        "description": "Cliente no encontrado"
+                    },
+                    "422": {
+                        "description": "Error de validación"
                     }
                 }
             }
@@ -104,7 +230,7 @@
                 "tags": [
                     "Credits"
                 ],
-                "summary": "Crear una solicitud de crédito",
+                "summary": "Crear solicitud de crédito",
                 "operationId": "20adb8e37d999768d012e35697654873",
                 "requestBody": {
                     "required": true,
@@ -214,6 +340,76 @@
                     },
                     "404": {
                         "description": "No encontrado"
+                    }
+                }
+            }
+        },
+        "/api/credits/{id}/instalments": {
+            "get": {
+                "tags": [
+                    "Credits"
+                ],
+                "summary": "Listar cuotas de un crédito",
+                "operationId": "76a25719d3f041a1ef982cd10b502580",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de cuotas"
+                    },
+                    "404": {
+                        "description": "Crédito no encontrado"
+                    }
+                }
+            }
+        },
+        "/api/credits/simulate": {
+            "get": {
+                "tags": [
+                    "Credits"
+                ],
+                "summary": "Simular plan de pagos antes de crear la solicitud",
+                "operationId": "05da7df019128c99939b5e1414c8207b",
+                "parameters": [
+                    {
+                        "name": "amount",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "term",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "interest",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Plan de cuotas simulado"
+                    },
+                    "400": {
+                        "description": "Parámetros inválidos"
                     }
                 }
             }
@@ -511,7 +707,7 @@
         },
         {
             "name": "Credits",
-            "description": "Operaciones de solicitudes de crédito"
+            "description": "credit applications"
         },
         {
             "name": "Phones",

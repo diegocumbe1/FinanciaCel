@@ -19,7 +19,7 @@ class Client extends Model
     ];
 
     protected $casts = [
-        'document_type_id' => 'uuid',
+        'document_type_id' => 'string',
     ];
     public function creditApplications() {
         return $this->hasMany(CreditApplication::class);
