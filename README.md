@@ -1,4 +1,4 @@
-# 📱 FinanciaCel – Prueba técnica
+# 📱 FinanciaCel
 
 Proyecto de backend desarrollado en PHP con Laravel, base de datos PostgreSQL y frontend en Vue.js. Dockerizado para facilitar la ejecución en cualquier entorno.
 
