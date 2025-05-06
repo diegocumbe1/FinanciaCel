@@ -69,6 +69,155 @@
                 }
             }
         },
+        "/api/credits": {
+            "get": {
+                "tags": [
+                    "Credits"
+                ],
+                "summary": "Listar solicitudes de crédito con filtros",
+                "operationId": "f1ba6d309eb546ae3ca5966ebcb787e6",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Buscar por nombre del cliente o modelo de teléfono",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "state",
+                        "in": "query",
+                        "description": "Filtrar por estado (pending, approved, rejected)",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de solicitudes"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Credits"
+                ],
+                "summary": "Crear una solicitud de crédito",
+                "operationId": "20adb8e37d999768d012e35697654873",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "client_id",
+                                    "phone_id",
+                                    "term"
+                                ],
+                                "properties": {
+                                    "client_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "phone_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "term": {
+                                        "type": "integer",
+                                        "example": 12
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Solicitud creada exitosamente"
+                    },
+                    "400": {
+                        "description": "Error de validación o crédito activo/stock insuficiente"
+                    }
+                }
+            }
+        },
+        "/api/credits/{id}": {
+            "get": {
+                "tags": [
+                    "Credits"
+                ],
+                "summary": "Obtener detalle de una solicitud de crédito",
+                "operationId": "f33fce09e267b9b84ecf03942c75c92e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalles de la solicitud"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Credits"
+                ],
+                "summary": "Actualizar parcialmente una solicitud de crédito",
+                "operationId": "dd2ce7411b65bf10cad652281ce11330",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "state": {
+                                        "type": "string",
+                                        "enum": [
+                                            "approved",
+                                            "rejected"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Solicitud actualizada"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                }
+            }
+        },
         "/api/phones": {
             "get": {
                 "tags": [
@@ -359,6 +508,10 @@
     "tags": [
         {
             "name": "Clients"
+        },
+        {
+            "name": "Credits",
+            "description": "Operaciones de solicitudes de crédito"
         },
         {
             "name": "Phones",
